@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from datetime import date, datetime, timedelta
 from typing import Any
+from urllib.error import HTTPError, URLError
 
 from .config import AppConfig
 from .http import get_json
@@ -126,13 +127,19 @@ def discover_recent_releases(config: AppConfig) -> list[ReleaseCandidate]:
     seen: set[tuple[str, str]] = set()
 
     for artist_name in config.favorite_artists:
-        artist = search_artist(artist_name)
+        try:
+            artist = search_artist(artist_name)
+        except (HTTPError, URLError, TimeoutError):
+            continue
         if not artist:
             continue
 
         offset = 0
         while True:
-            payload = browse_release_groups(artist["id"], offset=offset)
+            try:
+                payload = browse_release_groups(artist["id"], offset=offset)
+            except (HTTPError, URLError, TimeoutError):
+                break
             groups = payload.get("release-groups", [])
             if not groups:
                 break
@@ -178,11 +185,17 @@ def discover_bonus_catalog_pick(config: AppConfig) -> ReleaseCandidate | None:
         return None
 
     artist_name = config.bonus_catalog_artists[0]
-    artist = search_artist(artist_name)
+    try:
+        artist = search_artist(artist_name)
+    except (HTTPError, URLError, TimeoutError):
+        return None
     if not artist:
         return None
 
-    payload = browse_release_groups(artist["id"], offset=0)
+    try:
+        payload = browse_release_groups(artist["id"], offset=0)
+    except (HTTPError, URLError, TimeoutError):
+        return None
     groups = payload.get("release-groups", [])
     groups = [group for group in groups if (group.get("primary-type") or "Other").title() == "Album"]
     if not groups:
