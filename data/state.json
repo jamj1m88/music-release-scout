@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 6,
+  "recommendation_count": 5,
   "seen_release_keys": [
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
