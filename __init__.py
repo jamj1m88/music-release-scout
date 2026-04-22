@@ -1,0 +1,1 @@
+"""Music Release Scout package."""

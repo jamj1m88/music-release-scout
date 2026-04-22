@@ -1,0 +1,65 @@
+{
+  "profile_name": "jamie",
+  "favorite_artists": [
+    "Bruno Mars",
+    "John Mayer",
+    "Jamiroquai",
+    "Chromeo",
+    "A-Trak",
+    "Khruangbin",
+    "Foo Fighters",
+    "The Whitest Boy Alive",
+    "Usher",
+    "Tuxedo",
+    "Ed Sheeran",
+    "Red Hot Chili Peppers",
+    "Paramore",
+    "Rosalia"
+  ],
+  "genre_keywords": [
+    "pop",
+    "rock",
+    "alternative",
+    "indie",
+    "electronic",
+    "groove",
+    "world music",
+    "asian pop"
+  ],
+  "avoid_keywords": [],
+  "bonus_catalog_artists": [
+    "Joni Mitchell",
+    "Talk Talk"
+  ],
+  "discovery": {
+    "days_back": 21,
+    "max_recommendations": 8,
+    "include_release_types": [
+      "Album",
+      "EP",
+      "Single"
+    ],
+    "include_bonus_catalog_pick": true
+  },
+  "delivery": {
+    "telegram": {
+      "enabled": true,
+      "bot_token": "",
+      "bot_token_env": "TELEGRAM_BOT_TOKEN",
+      "chat_id": "",
+      "chat_id_env": "TELEGRAM_CHAT_ID"
+    },
+    "email": {
+      "enabled": false,
+      "smtp_host": "smtp.example.com",
+      "smtp_port": 587,
+      "username": "replace-me",
+      "username_env": "",
+      "password": "replace-me",
+      "password_env": "",
+      "from_address": "music-bot@example.com",
+      "to_address": "your-address@example.com",
+      "use_tls": true
+    }
+  }
+}
