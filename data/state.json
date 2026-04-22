@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 5,
+  "recommendation_count": 0,
   "seen_release_keys": [
     "bruno mars|collaborations|2026-04-18",
     "foo fighters|of all people|2026-04-10",
