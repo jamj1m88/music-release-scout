@@ -4,12 +4,20 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 5,
+  "recommendation_count": 8,
   "seen_release_keys": [
+    "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
+    "foo fighters|of all people",
     "foo fighters|of all people|2026-04-10",
+    "foo fighters|your favorite toy",
     "foo fighters|your favorite toy|2026-04-24",
+    "incognito|always there (dj bert bevans disco mix)",
+    "joni mitchell|second fret sets 1966-1968",
     "joni mitchell|second fret sets 1966-1968|",
-    "khruangbin|white gloves ii / m. blanc|2026-04-18"
+    "khruangbin|white gloves ii / m. blanc",
+    "khruangbin|white gloves ii / m. blanc|2026-04-18",
+    "myles smith|my mess, my heart, my life.",
+    "myles smith|stargazing (aurora edition)"
   ]
 }
