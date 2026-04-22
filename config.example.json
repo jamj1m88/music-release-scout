@@ -1,0 +1,66 @@
+{
+  "profile_name": "jamie",
+  "favorite_artists": [
+    "Caroline Polachek",
+    "Sufjan Stevens",
+    "Kelela"
+  ],
+  "genre_keywords": [
+    "art pop",
+    "indie",
+    "ambient",
+    "electronic",
+    "r&b"
+  ],
+  "avoid_keywords": [
+    "bro country",
+    "comedy",
+    "karaoke"
+  ],
+  "bonus_catalog_artists": [
+    "Joni Mitchell",
+    "Talk Talk"
+  ],
+  "discovery": {
+    "days_back": 21,
+    "max_recommendations": 9,
+    "allow_repeats_when_empty": true,
+    "max_repeat_recommendations": 6,
+    "enable_similar_artists": true,
+    "max_similar_artists_per_seed": 3,
+    "similar_artist_min_match": 0.55,
+    "lastfm_api_key": "",
+    "lastfm_api_key_env": "LASTFM_API_KEY",
+    "editorial_outlets": [
+      "npr_music",
+      "pitchfork_best_new_albums"
+    ],
+    "include_release_types": [
+      "Album",
+      "EP",
+      "Single"
+    ],
+    "include_bonus_catalog_pick": true
+  },
+  "delivery": {
+    "telegram": {
+      "enabled": false,
+      "bot_token": "",
+      "bot_token_env": "TELEGRAM_BOT_TOKEN",
+      "chat_id": "",
+      "chat_id_env": "TELEGRAM_CHAT_ID"
+    },
+    "email": {
+      "enabled": false,
+      "smtp_host": "smtp.example.com",
+      "smtp_port": 587,
+      "username": "replace-me",
+      "username_env": "",
+      "password": "replace-me",
+      "password_env": "",
+      "from_address": "music-bot@example.com",
+      "to_address": "your-address@example.com",
+      "use_tls": true
+    }
+  }
+}
