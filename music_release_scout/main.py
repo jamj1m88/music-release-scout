@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import unicodedata
 from pathlib import Path
 
 from .config import load_config
@@ -10,6 +12,21 @@ from .enrichment import enrich_candidate
 from .notifiers import send_email_digest, send_telegram_digest
 from .render import render_html, write_json
 from .state import candidate_key, load_seen_keys, write_state
+
+
+def _normalize_artist_key(artist_name: str) -> str:
+    normalized = unicodedata.normalize("NFKD", artist_name)
+    normalized = "".join(char for char in normalized if not unicodedata.combining(char))
+    normalized = normalized.lower().strip()
+    normalized = re.sub(r"^the\s+", "", normalized)
+    normalized = re.sub(r"\s+(feat|featuring|with|x|and)\s+.*$", "", normalized)
+    normalized = re.sub(r"[^a-z0-9]+", "", normalized)
+    return normalized
+
+
+def _has_artist(selected: list[ReleaseCandidate], artist_name: str) -> bool:
+    artist_key = _normalize_artist_key(artist_name)
+    return any(_normalize_artist_key(candidate.artist_name) == artist_key for candidate in selected)
 
 
 def _boost_multi_lane_candidates(candidates_by_bucket: dict[str, list[ReleaseCandidate]]) -> None:
@@ -41,6 +58,7 @@ def _pick_balanced_candidates(
 ) -> list[ReleaseCandidate]:
     selected: list[ReleaseCandidate] = []
     chosen_keys: set[str] = set()
+    chosen_artists: set[str] = set()
     pools = {bucket: list(candidates) for bucket, candidates in candidates_by_bucket.items()}
 
     while len(selected) < max_count:
@@ -50,10 +68,12 @@ def _pick_balanced_candidates(
             while pool:
                 candidate = pool.pop(0)
                 key = candidate_key(candidate)
-                if key in seen_keys or key in chosen_keys:
+                artist_key = _normalize_artist_key(candidate.artist_name)
+                if key in seen_keys or key in chosen_keys or artist_key in chosen_artists:
                     continue
                 selected.append(candidate)
                 chosen_keys.add(key)
+                chosen_artists.add(artist_key)
                 progress = True
                 break
             if len(selected) >= max_count:
@@ -71,10 +91,12 @@ def _pick_balanced_candidates(
 
     for candidate in remaining:
         key = candidate_key(candidate)
-        if key in seen_keys or key in chosen_keys:
+        artist_key = _normalize_artist_key(candidate.artist_name)
+        if key in seen_keys or key in chosen_keys or artist_key in chosen_artists:
             continue
         selected.append(candidate)
         chosen_keys.add(key)
+        chosen_artists.add(artist_key)
         if len(selected) >= max_count:
             break
 
@@ -87,6 +109,7 @@ def _prepare_repeat_candidates(
 ) -> list[ReleaseCandidate]:
     selected: list[ReleaseCandidate] = []
     chosen_keys: set[str] = set()
+    chosen_artists: set[str] = set()
     pools = {bucket: list(candidates) for bucket, candidates in candidates_by_bucket.items()}
 
     while len(selected) < config_max:
@@ -96,13 +119,15 @@ def _prepare_repeat_candidates(
             while pool:
                 candidate = pool.pop(0)
                 key = candidate_key(candidate)
-                if key in chosen_keys:
+                artist_key = _normalize_artist_key(candidate.artist_name)
+                if key in chosen_keys or artist_key in chosen_artists:
                     continue
                 reason = "was strong enough to repeat because this week was otherwise quiet"
                 if reason not in candidate.why:
                     candidate.why.insert(0, reason)
                 selected.append(candidate)
                 chosen_keys.add(key)
+                chosen_artists.add(artist_key)
                 progress = True
                 break
             if len(selected) >= config_max:
@@ -138,7 +163,11 @@ def build_digest(config_path: Path, output_dir: Path, state_path: Path) -> tuple
         )
 
     bonus = discover_bonus_catalog_pick(config)
-    if bonus and candidate_key(bonus) not in {candidate_key(pick) for pick in picks}:
+    if (
+        bonus
+        and candidate_key(bonus) not in {candidate_key(pick) for pick in picks}
+        and not _has_artist(picks, bonus.artist_name)
+    ):
         if candidate_key(bonus) not in seen_keys or not picks:
             picks.append(bonus)
 
