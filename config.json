@@ -33,9 +33,18 @@
   ],
   "discovery": {
     "days_back": 21,
-    "max_recommendations": 8,
+    "max_recommendations": 9,
     "allow_repeats_when_empty": true,
-    "max_repeat_recommendations": 4,
+    "max_repeat_recommendations": 6,
+    "enable_similar_artists": true,
+    "max_similar_artists_per_seed": 3,
+    "similar_artist_min_match": 0.55,
+    "lastfm_api_key": "",
+    "lastfm_api_key_env": "LASTFM_API_KEY",
+    "editorial_outlets": [
+      "npr_music",
+      "pitchfork_best_new_albums"
+    ],
     "include_release_types": [
       "Album",
       "EP",
