@@ -5,81 +5,96 @@ import json
 from pathlib import Path
 
 from .config import load_config
-from .discovery import discover_bonus_catalog_pick, discover_recent_releases
+from .discovery import BUCKET_ORDER, ReleaseCandidate, discover_bonus_catalog_pick, discover_candidates_by_bucket
 from .enrichment import enrich_candidate
 from .notifiers import send_email_digest, send_telegram_digest
 from .render import render_html, write_json
 from .state import candidate_key, load_seen_keys, write_state
 
 
-def build_digest(config_path: Path, output_dir: Path, state_path: Path) -> tuple[list[dict], str]:
-    config = load_config(config_path)
-    output_dir.mkdir(exist_ok=True)
-    state_path.parent.mkdir(exist_ok=True)
-    html_path = output_dir / "latest_digest.html"
-    json_path = output_dir / "latest_digest.json"
-    seen_keys = load_seen_keys(state_path)
+def _boost_multi_lane_candidates(candidates_by_bucket: dict[str, list[ReleaseCandidate]]) -> None:
+    support_map: dict[str, set[str]] = {}
+    for bucket, candidates in candidates_by_bucket.items():
+        for candidate in candidates:
+            support_map.setdefault(candidate_key(candidate), set()).add(bucket)
 
-    all_candidates = discover_recent_releases(config)
-    fresh_candidates = [
-        candidate
-        for candidate in all_candidates
-        if candidate_key(candidate) not in seen_keys
-    ]
-    using_repeats = False
-    selected_candidates = fresh_candidates
-    if not selected_candidates and config.discovery.allow_repeats_when_empty:
-        using_repeats = True
-        selected_candidates = all_candidates[: config.discovery.max_repeat_recommendations]
-        for candidate in selected_candidates:
-            candidate.why.insert(0, "was strong enough to repeat because this week was otherwise quiet")
-
-    picks = [enrich_candidate(candidate) for candidate in selected_candidates]
-    bonus = discover_bonus_catalog_pick(config)
-    if bonus and (candidate_key(bonus) not in seen_keys or using_repeats):
-        if using_repeats and candidate_key(bonus) in seen_keys:
-            bonus.why.insert(0, "repeat older pick kept as a worthwhile fallback")
-        picks.append(enrich_candidate(bonus))
-
-    render_html(config.profile_name, picks, html_path)
-    write_json(picks, json_path)
-    seen_keys.update(candidate_key(pick) for pick in picks)
-    write_state(
-        state_path=state_path,
-        profile_name=config.profile_name,
-        recommendation_count=len(picks),
-        html_path=html_path,
-        json_path=json_path,
-        seen_keys=seen_keys,
-    )
-
-    html_body = html_path.read_text(encoding="utf-8")
-    send_telegram_digest(config, picks)
-    send_email_digest(config, picks, html_body)
-    return [pick.to_dict() for pick in picks], html_body
+    for candidates in candidates_by_bucket.values():
+        for candidate in candidates:
+            supports = support_map.get(candidate_key(candidate), set())
+            if len(supports) > 1:
+                candidate.score += 12 * (len(supports) - 1)
+                candidate.significance += 6 * (len(supports) - 1)
+                reason = "surfaced across multiple research lanes this week"
+                if reason not in candidate.why:
+                    candidate.why.insert(0, reason)
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build and send a music release digest.")
-    parser.add_argument("--config", default="config.json", help="Path to the config JSON file.")
-    parser.add_argument("--output-dir", default="output", help="Directory for generated digest files.")
-    parser.add_argument(
-        "--state-path",
-        default="output/state.json",
-        help="Path to the state JSON file used for deduping recommendations.",
-    )
-    return parser.parse_args()
+def _sort_candidates(candidates_by_bucket: dict[str, list[ReleaseCandidate]]) -> None:
+    for candidates in candidates_by_bucket.values():
+        candidates.sort(key=lambda item: (item.score, item.significance, item.release_date), reverse=True)
 
 
-def main() -> None:
-    args = parse_args()
-    picks, _ = build_digest(
-        config_path=Path(args.config),
-        output_dir=Path(args.output_dir),
-        state_path=Path(args.state_path),
-    )
-    print(json.dumps({"recommendations": picks}, indent=2))
+def _pick_balanced_candidates(
+    candidates_by_bucket: dict[str, list[ReleaseCandidate]],
+    seen_keys: set[str],
+    max_count: int,
+) -> list[ReleaseCandidate]:
+    selected: list[ReleaseCandidate] = []
+    chosen_keys: set[str] = set()
+    pools = {bucket: list(candidates) for bucket, candidates in candidates_by_bucket.items()}
+
+    while len(selected) < max_count:
+        progress = False
+        for bucket in BUCKET_ORDER:
+            pool = pools.get(bucket, [])
+            while pool:
+                candidate = pool.pop(0)
+                key = candidate_key(candidate)
+                if key in seen_keys or key in chosen_keys:
+                    continue
+                selected.append(candidate)
+                chosen_keys.add(key)
+                progress = True
+                break
+            if len(selected) >= max_count:
+                break
+        if not progress:
+            break
+
+    if len(selected) >= max_count:
+        return selected[:max_count]
+
+    remaining = []
+    for bucket in BUCKET_ORDER:
+        remaining.extend(pools.get(bucket, []))
+    remaining.sort(key=lambda item: (item.score, item.significance, item.release_date), reverse=True)
+
+    for candidate in remaining:
+        key = candidate_key(candidate)
+        if key in seen_keys or key in chosen_keys:
+            continue
+        selected.append(candidate)
+        chosen_keys.add(key)
+        if len(selected) >= max_count:
+            break
+
+    return selected
 
 
-if __name__ == "__main__":
-    main()
+def _prepare_repeat_candidates(
+    config_max: int,
+    candidates_by_bucket: dict[str, list[ReleaseCandidate]],
+) -> list[ReleaseCandidate]:
+    selected: list[ReleaseCandidate] = []
+    chosen_keys: set[str] = set()
+    pools = {bucket: list(candidates) for bucket, candidates in candidates_by_bucket.items()}
+
+    while len(selected) < config_max:
+        progress = False
+        for bucket in BUCKET_ORDER:
+            pool = pools.get(bucket, [])
+            while pool:
+                candidate = pool.pop(0)
+                key = candidate_key(candidate)
+                if key in chosen_keys:
+                    continue
