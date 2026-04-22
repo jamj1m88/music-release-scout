@@ -19,7 +19,6 @@ def candidate_key(candidate: ReleaseCandidate) -> str:
         [
             candidate.artist_name.strip().lower(),
             candidate.release_title.strip().lower(),
-            candidate.release_date.strip(),
         ]
     )
 
