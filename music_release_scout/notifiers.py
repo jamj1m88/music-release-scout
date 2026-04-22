@@ -11,19 +11,18 @@ from .discovery import ReleaseCandidate
 
 
 def _blurb_for_pick(pick: ReleaseCandidate) -> str:
-    release_type = pick.release_type.lower()
     primary_reason = pick.why[0] if pick.why else "matches your taste profile"
     if "repeat" in primary_reason.lower():
         return f"Worth another look this week: {primary_reason}."
     if pick.release_type == "Bonus catalog pick":
         return f"Older gem pick: {primary_reason}."
-    if release_type == "album":
-        return f"Start here for a full listen. It surfaced because it {primary_reason}."
-    if release_type == "ep":
-        return f"A shorter new release worth a quick spin. It surfaced because it {primary_reason}."
-    if release_type == "single":
-        return f"Easy one-track check-in. It surfaced because it {primary_reason}."
-    return f"Fresh pick for this week. It surfaced because it {primary_reason}."
+    if pick.bucket == "core":
+        return f"Direct from your core list: {primary_reason}."
+    if pick.bucket == "similar":
+        return f"From your expanded artist orbit: {primary_reason}."
+    if pick.bucket == "editorial":
+        return f"Editor-backed signal from {pick.source_detail}: {primary_reason}."
+    return f"Fresh pick for this week: {primary_reason}."
 
 
 def _telegram_message(picks: list[ReleaseCandidate]) -> str:
@@ -34,7 +33,9 @@ def _telegram_message(picks: list[ReleaseCandidate]) -> str:
     for index, pick in enumerate(picks, start=1):
         title = html.escape(f"{pick.artist_name} - {pick.release_title}")
         lines.append(f"{index}. <b>{title}</b>")
-        lines.append(f"Released: {html.escape(pick.release_date)}")
+        lines.append(f"Lane: {html.escape(pick.bucket.title())} via {html.escape(pick.source_detail)}")
+        if pick.release_date:
+            lines.append(f"Date: {html.escape(pick.release_date)}")
 
         link_labels: list[str] = []
         if pick.apple_music_url:
