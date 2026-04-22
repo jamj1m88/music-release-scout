@@ -20,14 +20,25 @@ def build_digest(config_path: Path, output_dir: Path, state_path: Path) -> tuple
     json_path = output_dir / "latest_digest.json"
     seen_keys = load_seen_keys(state_path)
 
+    all_candidates = discover_recent_releases(config)
     fresh_candidates = [
         candidate
-        for candidate in discover_recent_releases(config)
+        for candidate in all_candidates
         if candidate_key(candidate) not in seen_keys
     ]
-    picks = [enrich_candidate(candidate) for candidate in fresh_candidates]
+    using_repeats = False
+    selected_candidates = fresh_candidates
+    if not selected_candidates and config.discovery.allow_repeats_when_empty:
+        using_repeats = True
+        selected_candidates = all_candidates[: config.discovery.max_repeat_recommendations]
+        for candidate in selected_candidates:
+            candidate.why.insert(0, "was strong enough to repeat because this week was otherwise quiet")
+
+    picks = [enrich_candidate(candidate) for candidate in selected_candidates]
     bonus = discover_bonus_catalog_pick(config)
-    if bonus and candidate_key(bonus) not in seen_keys:
+    if bonus and (candidate_key(bonus) not in seen_keys or using_repeats):
+        if using_repeats and candidate_key(bonus) in seen_keys:
+            bonus.why.insert(0, "repeat older pick kept as a worthwhile fallback")
         picks.append(enrich_candidate(bonus))
 
     render_html(config.profile_name, picks, html_path)
