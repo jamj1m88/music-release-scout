@@ -38,6 +38,8 @@ class DiscoveryConfig:
     max_recommendations: int
     include_release_types: list[str]
     include_bonus_catalog_pick: bool
+    allow_repeats_when_empty: bool
+    max_repeat_recommendations: int
 
 
 @dataclass
@@ -77,6 +79,8 @@ def load_config(path: str | Path) -> AppConfig:
             max_recommendations=int(discovery_raw["max_recommendations"]),
             include_release_types=list(discovery_raw["include_release_types"]),
             include_bonus_catalog_pick=bool(discovery_raw["include_bonus_catalog_pick"]),
+            allow_repeats_when_empty=bool(discovery_raw.get("allow_repeats_when_empty", True)),
+            max_repeat_recommendations=int(discovery_raw.get("max_repeat_recommendations", 4)),
         ),
         delivery=DeliveryConfig(
             telegram=TelegramConfig(
