@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import smtplib
 from email.message import EmailMessage
 from urllib.parse import urlencode
@@ -9,19 +10,43 @@ from .config import AppConfig
 from .discovery import ReleaseCandidate
 
 
+def _blurb_for_pick(pick: ReleaseCandidate) -> str:
+    release_type = pick.release_type.lower()
+    primary_reason = pick.why[0] if pick.why else "matches your taste profile"
+    if pick.release_type == "Bonus catalog pick":
+        return f"Older gem pick: {primary_reason}."
+    if release_type == "album":
+        return f"Start here for a full listen. It surfaced because it {primary_reason}."
+    if release_type == "ep":
+        return f"A shorter new release worth a quick spin. It surfaced because it {primary_reason}."
+    if release_type == "single":
+        return f"Easy one-track check-in. It surfaced because it {primary_reason}."
+    return f"Fresh pick for this week. It surfaced because it {primary_reason}."
+
+
 def _telegram_message(picks: list[ReleaseCandidate]) -> str:
     if not picks:
         return "No fresh music matches this week."
 
-    lines = ["Your weekly music picks:"]
+    lines = ["<b>Your weekly music picks</b>"]
     for index, pick in enumerate(picks, start=1):
-        lines.append(f"{index}. {pick.artist_name} - {pick.release_title} ({pick.release_date})")
+        title = html.escape(f"{pick.artist_name} - {pick.release_title}")
+        lines.append(f"{index}. <b>{title}</b>")
+        lines.append(f"Released: {html.escape(pick.release_date)}")
+
+        link_labels: list[str] = []
         if pick.apple_music_url:
-            lines.append(f"   Apple/iTunes: {pick.apple_music_url}")
+            link_labels.append(f'<a href="{html.escape(pick.apple_music_url, quote=True)}">Apple</a>')
         if pick.apple_preview_url:
-            lines.append(f"   Preview: {pick.apple_preview_url}")
+            link_labels.append(f'<a href="{html.escape(pick.apple_preview_url, quote=True)}">Preview</a>')
         if pick.youtube_music_url:
-            lines.append(f"   YouTube Music: {pick.youtube_music_url}")
+            link_labels.append(
+                f'<a href="{html.escape(pick.youtube_music_url, quote=True)}">YouTube Music</a>'
+            )
+        if link_labels:
+            lines.append("Listen: " + " | ".join(link_labels))
+        lines.append("Note: " + html.escape(_blurb_for_pick(pick)))
+        lines.append("")
     return "\n".join(lines)
 
 
@@ -34,6 +59,8 @@ def send_telegram_digest(config: AppConfig, picks: list[ReleaseCandidate]) -> No
         {
             "chat_id": telegram.chat_id,
             "text": _telegram_message(picks),
+            "parse_mode": "HTML",
+            "disable_web_page_preview": "true",
         }
     ).encode("utf-8")
     request = Request(
