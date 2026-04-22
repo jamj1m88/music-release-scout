@@ -40,6 +40,11 @@ class DiscoveryConfig:
     include_bonus_catalog_pick: bool
     allow_repeats_when_empty: bool
     max_repeat_recommendations: int
+    enable_similar_artists: bool
+    max_similar_artists_per_seed: int
+    similar_artist_min_match: float
+    lastfm_api_key: str
+    editorial_outlets: list[str]
 
 
 @dataclass
@@ -59,8 +64,8 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 def _read_secret(raw: dict[str, Any], value_key: str, env_key: str) -> str:
     if raw.get(env_key):
-        return os.environ.get(str(raw[env_key]), "")
-    return str(raw.get(value_key, ""))
+        return os.environ.get(str(raw[env_key]), "").strip()
+    return str(raw.get(value_key, "")).strip()
 
 
 def load_config(path: str | Path) -> AppConfig:
@@ -81,6 +86,13 @@ def load_config(path: str | Path) -> AppConfig:
             include_bonus_catalog_pick=bool(discovery_raw["include_bonus_catalog_pick"]),
             allow_repeats_when_empty=bool(discovery_raw.get("allow_repeats_when_empty", True)),
             max_repeat_recommendations=int(discovery_raw.get("max_repeat_recommendations", 4)),
+            enable_similar_artists=bool(discovery_raw.get("enable_similar_artists", True)),
+            max_similar_artists_per_seed=int(discovery_raw.get("max_similar_artists_per_seed", 3)),
+            similar_artist_min_match=float(discovery_raw.get("similar_artist_min_match", 0.5)),
+            lastfm_api_key=_read_secret(discovery_raw, "lastfm_api_key", "lastfm_api_key_env"),
+            editorial_outlets=list(
+                discovery_raw.get("editorial_outlets", ["npr_music", "pitchfork_best_new_albums"])
+            ),
         ),
         delivery=DeliveryConfig(
             telegram=TelegramConfig(
