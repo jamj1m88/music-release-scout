@@ -24,7 +24,7 @@ def render_html(profile_name: str, picks: list[ReleaseCandidate], output_path: P
         cards.append(
             f"""
             <article class="card">
-              <div class="meta">{html.escape(pick.release_type)} • {html.escape(pick.release_date)}</div>
+              <div class="meta">{html.escape(pick.bucket.title())} • {html.escape(pick.source_detail)} • {html.escape(pick.release_date or pick.release_type)}</div>
               <h2>{html.escape(pick.artist_name)} - {html.escape(pick.release_title)}</h2>
               <p class="links">{link_html}</p>
               <ul>{why}</ul>
