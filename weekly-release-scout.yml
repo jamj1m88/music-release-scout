@@ -1,0 +1,67 @@
+name: Weekly Release Scout
+
+on:
+  schedule:
+    - cron: "0 22 * * 4"
+    - cron: "0 23 * * 4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check Sydney schedule
+        id: schedule
+        run: |
+          python - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          now = datetime.now(ZoneInfo("Australia/Sydney"))
+          should_run = now.weekday() == 4 and now.hour == 9
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"should_run={'true' if should_run else 'false'}\n")
+              fh.write(f"sydney_now={now.isoformat()}\n")
+          print(f"Sydney time: {now.isoformat()}")
+          print(f"Should run: {should_run}")
+          PY
+
+      - name: Build and send digest
+        if: steps.schedule.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -m music_release_scout.main --config config.json --output-dir output --state-path data/state.json
+
+      - name: Upload digest artifacts
+        if: steps.schedule.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: music-release-digest
+          path: output/
+
+      - name: Commit updated state
+        if: steps.schedule.outputs.should_run == 'true' || github.event_name == 'workflow_dispatch'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/state.json
+          if git diff --cached --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "Update music release scout state"
+            git push
+          fi
