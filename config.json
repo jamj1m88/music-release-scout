@@ -34,6 +34,8 @@
   "discovery": {
     "days_back": 21,
     "max_recommendations": 8,
+    "allow_repeats_when_empty": true,
+    "max_repeat_recommendations": 4,
     "include_release_types": [
       "Album",
       "EP",
