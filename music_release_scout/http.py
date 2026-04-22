@@ -8,18 +8,18 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 
-USER_AGENT = "MusicReleaseScout/0.1 (personal music release digest)"
+USER_AGENT = "MusicReleaseScout/0.2 (personal music release digest)"
 TRANSIENT_STATUS_CODES = {429, 500, 502, 503, 504}
 
 
-def get_json(url: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+def _fetch_bytes(url: str, params: dict[str, Any] | None = None) -> bytes:
     final_url = url
     if params:
         final_url = f"{url}?{urlencode(params)}"
     request = Request(
         final_url,
         headers={
-            "Accept": "application/json",
+            "Accept": "*/*",
             "User-Agent": USER_AGENT,
         },
     )
@@ -27,7 +27,7 @@ def get_json(url: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
     for attempt in range(4):
         try:
             with urlopen(request, timeout=20) as response:
-                return json.loads(response.read().decode("utf-8"))
+                return response.read()
         except HTTPError as exc:
             last_error = exc
             if exc.code not in TRANSIENT_STATUS_CODES or attempt == 3:
@@ -40,4 +40,12 @@ def get_json(url: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
 
     if last_error:
         raise last_error
-    raise RuntimeError("Failed to fetch JSON for an unknown reason.")
+    raise RuntimeError("Failed to fetch content for an unknown reason.")
+
+
+def get_json(url: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
+    return json.loads(_fetch_bytes(url, params=params).decode("utf-8"))
+
+
+def get_text(url: str, params: dict[str, Any] | None = None) -> str:
+    return _fetch_bytes(url, params=params).decode("utf-8", errors="replace")
