@@ -43,6 +43,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
         run: |
           python -m music_release_scout.main --config config.json --output-dir output --state-path data/state.json
 
