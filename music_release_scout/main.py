@@ -98,3 +98,91 @@ def _prepare_repeat_candidates(
                 key = candidate_key(candidate)
                 if key in chosen_keys:
                     continue
+                reason = "was strong enough to repeat because this week was otherwise quiet"
+                if reason not in candidate.why:
+                    candidate.why.insert(0, reason)
+                selected.append(candidate)
+                chosen_keys.add(key)
+                progress = True
+                break
+            if len(selected) >= config_max:
+                break
+        if not progress:
+            break
+
+    return selected
+
+
+def build_digest(config_path: Path, output_dir: Path, state_path: Path) -> tuple[list[dict], str]:
+    config = load_config(config_path)
+    output_dir.mkdir(exist_ok=True)
+    state_path.parent.mkdir(exist_ok=True)
+    html_path = output_dir / "latest_digest.html"
+    json_path = output_dir / "latest_digest.json"
+    seen_keys = load_seen_keys(state_path)
+
+    candidates_by_bucket = discover_candidates_by_bucket(config)
+    _boost_multi_lane_candidates(candidates_by_bucket)
+    _sort_candidates(candidates_by_bucket)
+
+    picks = _pick_balanced_candidates(
+        candidates_by_bucket=candidates_by_bucket,
+        seen_keys=seen_keys,
+        max_count=config.discovery.max_recommendations,
+    )
+
+    if not picks and config.discovery.allow_repeats_when_empty:
+        picks = _prepare_repeat_candidates(
+            config.discovery.max_repeat_recommendations,
+            candidates_by_bucket,
+        )
+
+    bonus = discover_bonus_catalog_pick(config)
+    if bonus and candidate_key(bonus) not in {candidate_key(pick) for pick in picks}:
+        if candidate_key(bonus) not in seen_keys or not picks:
+            picks.append(bonus)
+
+    enriched_picks = [enrich_candidate(candidate) for candidate in picks]
+
+    render_html(config.profile_name, enriched_picks, html_path)
+    write_json(enriched_picks, json_path)
+    seen_keys.update(candidate_key(pick) for pick in enriched_picks)
+    write_state(
+        state_path=state_path,
+        profile_name=config.profile_name,
+        recommendation_count=len(enriched_picks),
+        html_path=html_path,
+        json_path=json_path,
+        seen_keys=seen_keys,
+    )
+
+    html_body = html_path.read_text(encoding="utf-8")
+    send_telegram_digest(config, enriched_picks)
+    send_email_digest(config, enriched_picks, html_body)
+    return [pick.to_dict() for pick in enriched_picks], html_body
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Build and send a music release digest.")
+    parser.add_argument("--config", default="config.json", help="Path to the config JSON file.")
+    parser.add_argument("--output-dir", default="output", help="Directory for generated digest files.")
+    parser.add_argument(
+        "--state-path",
+        default="output/state.json",
+        help="Path to the state JSON file used for deduping recommendations.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    picks, _ = build_digest(
+        config_path=Path(args.config),
+        output_dir=Path(args.output_dir),
+        state_path=Path(args.state_path),
+    )
+    print(json.dumps({"recommendations": picks}, indent=2))
+
+
+if __name__ == "__main__":
+    main()
