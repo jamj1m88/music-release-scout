@@ -13,6 +13,8 @@ from .discovery import ReleaseCandidate
 def _blurb_for_pick(pick: ReleaseCandidate) -> str:
     release_type = pick.release_type.lower()
     primary_reason = pick.why[0] if pick.why else "matches your taste profile"
+    if "repeat" in primary_reason.lower():
+        return f"Worth another look this week: {primary_reason}."
     if pick.release_type == "Bonus catalog pick":
         return f"Older gem pick: {primary_reason}."
     if release_type == "album":
