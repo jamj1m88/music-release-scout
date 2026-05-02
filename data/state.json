@@ -4,12 +4,13 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 1,
+  "recommendation_count": 6,
   "seen_release_keys": [
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
     "chromeo|love is an ocean (chromeo remix)",
     "digitalism|optimism",
+    "digitalism|sirens",
     "foo fighters|of all people",
     "foo fighters|of all people|2026-04-10",
     "foo fighters|your favorite toy",
@@ -23,5 +24,6 @@
     "myles smith|my mess, my heart, my life.",
     "myles smith|stargazing (aurora edition)",
     "usher|shoulda never"
-  ]
+  ],
+  "last_delivery_local_date": "2026-05-02"
 }
