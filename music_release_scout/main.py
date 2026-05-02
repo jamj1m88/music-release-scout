@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import unicodedata
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from .config import load_config
 from .discovery import BUCKET_ORDER, ReleaseCandidate, discover_bonus_catalog_pick, discover_candidates_by_bucket
@@ -12,6 +15,18 @@ from .enrichment import enrich_candidate
 from .notifiers import send_email_digest, send_telegram_digest
 from .render import render_html, write_json
 from .state import candidate_key, load_seen_keys, write_state
+
+
+def _delivery_timezone() -> ZoneInfo:
+    timezone_name = os.environ.get("MUSIC_SCOUT_TIMEZONE", "Australia/Sydney")
+    try:
+        return ZoneInfo(timezone_name)
+    except Exception:
+        return ZoneInfo("Australia/Sydney")
+
+
+def _today_local_date() -> str:
+    return datetime.now(_delivery_timezone()).date().isoformat()
 
 
 def _normalize_artist_key(artist_name: str) -> str:
@@ -104,15 +119,16 @@ def _pick_balanced_candidates(
 
 
 def _prepare_repeat_candidates(
-    config_max: int,
+    target_count: int,
     candidates_by_bucket: dict[str, list[ReleaseCandidate]],
+    existing: list[ReleaseCandidate] | None = None,
 ) -> list[ReleaseCandidate]:
-    selected: list[ReleaseCandidate] = []
-    chosen_keys: set[str] = set()
-    chosen_artists: set[str] = set()
+    selected = list(existing or [])
+    chosen_keys = {candidate_key(candidate) for candidate in selected}
+    chosen_artists = {_normalize_artist_key(candidate.artist_name) for candidate in selected}
     pools = {bucket: list(candidates) for bucket, candidates in candidates_by_bucket.items()}
 
-    while len(selected) < config_max:
+    while len(selected) < target_count:
         progress = False
         for bucket in BUCKET_ORDER:
             pool = pools.get(bucket, [])
@@ -130,7 +146,7 @@ def _prepare_repeat_candidates(
                 chosen_artists.add(artist_key)
                 progress = True
                 break
-            if len(selected) >= config_max:
+            if len(selected) >= target_count:
                 break
         if not progress:
             break
@@ -156,10 +172,15 @@ def build_digest(config_path: Path, output_dir: Path, state_path: Path) -> tuple
         max_count=config.discovery.max_recommendations,
     )
 
-    if not picks and config.discovery.allow_repeats_when_empty:
+    if config.discovery.allow_repeats_when_empty and len(picks) < config.discovery.max_recommendations:
+        target_count = min(
+            config.discovery.max_recommendations,
+            max(config.discovery.max_repeat_recommendations, len(picks)),
+        )
         picks = _prepare_repeat_candidates(
-            config.discovery.max_repeat_recommendations,
-            candidates_by_bucket,
+            target_count=target_count,
+            candidates_by_bucket=candidates_by_bucket,
+            existing=picks,
         )
 
     bonus = discover_bonus_catalog_pick(config)
@@ -183,6 +204,7 @@ def build_digest(config_path: Path, output_dir: Path, state_path: Path) -> tuple
         html_path=html_path,
         json_path=json_path,
         seen_keys=seen_keys,
+        last_delivery_local_date=_today_local_date(),
     )
 
     html_body = html_path.read_text(encoding="utf-8")
