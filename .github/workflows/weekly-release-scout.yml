@@ -2,7 +2,11 @@ name: Weekly Release Scout
 
 on:
   schedule:
-    - cron: "17 9 * * 5"
+    - cron: "17 9 * * *"
+      timezone: "Australia/Sydney"
+    - cron: "17 12 * * *"
+      timezone: "Australia/Sydney"
+    - cron: "17 17 * * *"
       timezone: "Australia/Sydney"
   workflow_dispatch:
 
@@ -21,8 +25,34 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Check whether already delivered today
+        id: delivery_guard
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime
+          from pathlib import Path
+          from zoneinfo import ZoneInfo
+
+          state_path = Path("data/state.json")
+          timezone_name = "Australia/Sydney"
+          today = datetime.now(ZoneInfo(timezone_name)).date().isoformat()
+          already_sent = False
+          if state_path.exists():
+              payload = json.loads(state_path.read_text(encoding="utf-8"))
+              already_sent = payload.get("last_delivery_local_date") == today
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"already_sent={'true' if already_sent else 'false'}\n")
+              fh.write(f"today={today}\n")
+          print(f"Today in {timezone_name}: {today}")
+          print(f"Already sent today: {already_sent}")
+          PY
+
       - name: Build and send digest
+        if: steps.delivery_guard.outputs.already_sent != 'true' || github.event_name == 'workflow_dispatch'
         env:
+          MUSIC_SCOUT_TIMEZONE: Australia/Sydney
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
@@ -30,12 +60,14 @@ jobs:
           python -m music_release_scout.main --config config.json --output-dir output --state-path data/state.json
 
       - name: Upload digest artifacts
+        if: steps.delivery_guard.outputs.already_sent != 'true' || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: music-release-digest
           path: output/
 
       - name: Commit updated state
+        if: steps.delivery_guard.outputs.already_sent != 'true' || github.event_name == 'workflow_dispatch'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
