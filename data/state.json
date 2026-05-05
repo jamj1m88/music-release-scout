@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 6,
+  "recommendation_count": 7,
   "seen_release_keys": [
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
@@ -19,11 +19,12 @@
     "incognito|always there (dj bert bevans disco mix)",
     "joni mitchell|second fret sets 1966-1968",
     "joni mitchell|second fret sets 1966-1968|",
+    "joni mitchell|song to a seagull",
     "khruangbin|white gloves ii / m. blanc",
     "khruangbin|white gloves ii / m. blanc|2026-04-18",
     "myles smith|my mess, my heart, my life.",
     "myles smith|stargazing (aurora edition)",
     "usher|shoulda never"
   ],
-  "last_delivery_local_date": "2026-05-04"
+  "last_delivery_local_date": "2026-05-05"
 }
