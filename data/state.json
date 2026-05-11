@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 6,
+  "recommendation_count": 0,
   "seen_release_keys": [
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
@@ -28,5 +28,5 @@
     "steve aoki|yapaque",
     "usher|shoulda never"
   ],
-  "last_delivery_local_date": "2026-05-11"
+  "last_delivery_local_date": "2026-05-12"
 }
