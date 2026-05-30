@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 4,
+  "recommendation_count": 3,
   "seen_release_keys": [
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
@@ -23,6 +23,7 @@
     "joni mitchell|second fret sets 1966-1968|",
     "joni mitchell|song to a seagull",
     "justice|what you want (fcukers remix)",
+    "justice|what you want (sg lewis remix)",
     "khruangbin|white gloves ii / m. blanc",
     "khruangbin|white gloves ii / m. blanc|2026-04-18",
     "mayer hawthorne|baby come back",
@@ -31,5 +32,5 @@
     "steve aoki|yapaque",
     "usher|shoulda never"
   ],
-  "last_delivery_local_date": "2026-05-29"
+  "last_delivery_local_date": "2026-05-30"
 }
