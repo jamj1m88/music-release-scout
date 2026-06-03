@@ -4,8 +4,9 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 5,
+  "recommendation_count": 6,
   "seen_release_keys": [
+    "balthvs|eternal flow",
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
     "bruno mars|lo arriesgo todo",
@@ -33,5 +34,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-06-02"
+  "last_delivery_local_date": "2026-06-03"
 }
