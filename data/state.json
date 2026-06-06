@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 6,
+  "recommendation_count": 5,
   "seen_release_keys": [
     "balthvs|eternal flow",
     "bruno mars|collaborations",
@@ -20,6 +20,7 @@
     "foo fighters|your favorite toy|2026-04-24",
     "hayley williams|the rising skyline",
     "incognito|always there (dj bert bevans disco mix)",
+    "john mayer|phone, keys, wallet",
     "joni mitchell|second fret sets 1966-1968",
     "joni mitchell|second fret sets 1966-1968|",
     "joni mitchell|song to a seagull",
@@ -34,5 +35,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-06-05"
+  "last_delivery_local_date": "2026-06-06"
 }
