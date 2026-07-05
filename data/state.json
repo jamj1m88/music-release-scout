@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 2,
+  "recommendation_count": 3,
   "seen_release_keys": [
     "balthvs|eternal flow",
     "boys noize|itvlo",
@@ -15,6 +15,7 @@
     "digitalism|optimism",
     "digitalism|sirens",
     "ed sheeran|repeat it",
+    "eladio carri\u00f3n|outside",
     "foo fighters|of all people",
     "foo fighters|of all people|2026-04-10",
     "foo fighters|your favorite toy",
@@ -37,5 +38,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-07-04"
+  "last_delivery_local_date": "2026-07-05"
 }
