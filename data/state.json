@@ -4,13 +4,14 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 3,
+  "recommendation_count": 4,
   "seen_release_keys": [
     "balthvs|eternal flow",
     "boys noize|itvlo",
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
     "bruno mars|lo arriesgo todo",
+    "chromeo|denisse",
     "chromeo|love is an ocean (chromeo remix)",
     "digitalism|optimism",
     "digitalism|sirens",
@@ -39,5 +40,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-07-10"
+  "last_delivery_local_date": "2026-07-11"
 }
