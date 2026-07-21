@@ -4,9 +4,11 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 3,
+  "recommendation_count": 5,
   "seen_release_keys": [
+    "alejandro sanz|las guapas",
     "balthvs|eternal flow",
+    "balthvs|motion (for ashra)",
     "boys noize|itvlo",
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
@@ -41,5 +43,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-07-20"
+  "last_delivery_local_date": "2026-07-21"
 }
