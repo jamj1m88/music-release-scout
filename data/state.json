@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 2,
+  "recommendation_count": 3,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -15,6 +15,7 @@
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
     "bruno mars|lo arriesgo todo",
+    "bruno mars|still",
     "chromeo|denisse",
     "chromeo|love is an ocean (chromeo remix)",
     "chromeo|mentirasmentiras",
@@ -47,5 +48,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-08-25"
+  "last_delivery_local_date": "2026-08-26"
 }
