@@ -4,12 +4,13 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 1,
+  "recommendation_count": 2,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
     "balthvs|manifest",
     "balthvs|motion (for ashra)",
+    "boys noize|1+1+1",
     "boys noize|baile df",
     "boys noize|itvlo",
     "boys noize|shut it down (funk tribu remix)",
@@ -49,5 +50,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-09-24"
+  "last_delivery_local_date": "2026-09-25"
 }
