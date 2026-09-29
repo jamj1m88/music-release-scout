@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 3,
+  "recommendation_count": 4,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -30,6 +30,7 @@
     "foo fighters|of all people|2026-04-10",
     "foo fighters|your favorite toy",
     "foo fighters|your favorite toy|2026-04-24",
+    "hayley williams|spit (power snatch version)",
     "hayley williams|the rising skyline",
     "incognito|always there (dj bert bevans disco mix)",
     "john mayer|phone, keys, wallet",
@@ -51,5 +52,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-09-29"
+  "last_delivery_local_date": "2026-09-30"
 }
