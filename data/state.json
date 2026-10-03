@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 4,
+  "recommendation_count": 5,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -16,6 +16,7 @@
     "boys noize|shut it down (funk tribu remix)",
     "bruno mars|collaborations",
     "bruno mars|collaborations|2026-04-18",
+    "bruno mars|dance with me",
     "bruno mars|lo arriesgo todo",
     "bruno mars|still",
     "chromeo|denisse",
@@ -52,5 +53,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-10-02"
+  "last_delivery_local_date": "2026-10-03"
 }
