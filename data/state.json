@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 5,
+  "recommendation_count": 4,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -39,6 +39,7 @@
     "joni mitchell|second fret sets 1966-1968|",
     "joni mitchell|song to a seagull",
     "justice|flower in a hurricane (feat. tame impala, sza, king gizzard & the lizard wizard)",
+    "justice|flower in a hurricane (from gtavi)",
     "justice|what you want (fcukers remix)",
     "justice|what you want (sg lewis remix)",
     "khruangbin|white gloves ii / m. blanc",
@@ -54,5 +55,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-10-16"
+  "last_delivery_local_date": "2026-10-17"
 }
