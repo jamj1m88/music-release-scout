@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 2,
+  "recommendation_count": 3,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -36,6 +36,7 @@
     "hayley williams|the rising skyline",
     "incognito|always there (dj bert bevans disco mix)",
     "john mayer|phone, keys, wallet",
+    "john mayer|tom and jerry",
     "joni mitchell|second fret sets 1966-1968",
     "joni mitchell|second fret sets 1966-1968|",
     "joni mitchell|song to a seagull",
@@ -56,5 +57,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-10-23"
+  "last_delivery_local_date": "2026-10-24"
 }
