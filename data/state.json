@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 2,
+  "recommendation_count": 3,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -27,6 +27,7 @@
     "digitalism|optimism",
     "digitalism|sirens",
     "ed sheeran|repeat it",
+    "eladio carri\u00f3n|body (remix)",
     "eladio carri\u00f3n|outside",
     "foo fighters|of all people",
     "foo fighters|of all people|2026-04-10",
@@ -60,5 +61,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-10-30"
+  "last_delivery_local_date": "2026-10-31"
 }
