@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 3,
+  "recommendation_count": 4,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -58,8 +58,9 @@
     "ne-yo|thinking what i'm thinking",
     "steve aoki|yapaque",
     "tuxedo|genius of love (featuring gavin turek)",
+    "tuxedo|sending my love",
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-11-06"
+  "last_delivery_local_date": "2026-11-07"
 }
