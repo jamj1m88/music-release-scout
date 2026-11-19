@@ -4,7 +4,7 @@
     "html": "output/latest_digest.html",
     "json": "output/latest_digest.json"
   },
-  "recommendation_count": 2,
+  "recommendation_count": 3,
   "seen_release_keys": [
     "alejandro sanz|las guapas",
     "balthvs|eternal flow",
@@ -48,6 +48,7 @@
     "justice|flower in a hurricane (from gtavi)",
     "justice|grand theft auto vi: original score",
     "justice|pusher",
+    "justice|starting from zero",
     "justice|what you want (fcukers remix)",
     "justice|what you want (sg lewis remix)",
     "khruangbin|white gloves ii / m. blanc",
@@ -64,5 +65,5 @@
     "usher|shoulda never",
     "yuksek|mata (bande originale)"
   ],
-  "last_delivery_local_date": "2026-11-19"
+  "last_delivery_local_date": "2026-11-20"
 }
